@@ -27,7 +27,14 @@ public class SingUpRoute implements Route {
         if (!httpRequest.getMethod().equals(HttpMethod.POST)) {
             throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
         }
+        System.out.println("Метод: " + httpRequest.getMethod().toString());
+        System.out.println("Путь: " + httpRequest.getUri().toString());
+        System.out.println("Протокол: " + httpRequest.getProtocolVersion());
+        System.out.println("Заголовки: " + httpRequest.getHeaders());
+        System.out.println("Тело: " + httpRequest.getBody());
+
         String stringUserDTO = httpRequest.getBody();
+        System.out.println("UserDTO: " + stringUserDTO);
         User user = userService.createNewUser(objectMapper.readValue(stringUserDTO, User.class));
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setProtocolVersion(httpRequest.getProtocolVersion());

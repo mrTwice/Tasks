@@ -1,33 +1,27 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server;
 
-import ru.infinitesynergy.yampolskiy.restapiserver.service.BankAccountService;
-import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
 
 public class BankServer {
     private static final int PORT = 8080;
-    private Dispatcher dispatcher;
+    private static final LinkedList<ClientHandler> handlers = new LinkedList<>();
+    private static final Dispatcher dispatcher = new Dispatcher();
 
-    public BankServer() {
-    }
-
-    public void start() {
-        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
-            System.out.println("Server started on port 8080...");
+    public static void main(String[] args) {
+        try (ServerSocket server = new ServerSocket(PORT)) {
+            System.out.println("Сервер запущен на порту: " + PORT);
             while (true) {
-                try(Socket clientSocket = serverSocket.accept()) {
-                    System.out.println("Client connected: " + clientSocket.getInetAddress());
-                    // Обработка запроса в новом потоке
-                    new Thread(new ClientHandler(clientSocket, dispatcher)).start();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                Socket socket = server.accept();
+                System.out.printf("Адрес клиента: %s\n Порт клиента: %s\n ",socket.getInetAddress(), socket.getPort());
+                ClientHandler handler = new ClientHandler(socket, dispatcher);
+                handlers.add(handler);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 }
+
