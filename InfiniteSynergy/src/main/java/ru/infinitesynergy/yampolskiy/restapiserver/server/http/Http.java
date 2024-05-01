@@ -28,4 +28,12 @@ public class Http {
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public String getBody() {
+        return body;
+    }
 }

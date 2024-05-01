@@ -1,19 +1,27 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.entities;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.PasswordIsNullException;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.UserNameIsNullException;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonSerialize
+@JsonDeserialize
 public class User {
     private Long id;
-    private String username;
+    private String login;
     private String password;
     private List<Long> bankAccountList = new ArrayList<>();
 
-    private User(String username, String password) {
-        this.username = username;
+    public User(){
+
+    }
+
+    private User(String login, String password) {
+        this.login = login;
         this.password = password;
     }
 
@@ -34,8 +42,8 @@ public class User {
         return id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getLogin() {
+        return login;
     }
 
     public String getPassword() {
@@ -50,8 +58,8 @@ public class User {
         this.id = id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public void setPassword(String password) {

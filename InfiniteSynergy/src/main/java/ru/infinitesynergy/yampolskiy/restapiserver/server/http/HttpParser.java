@@ -27,9 +27,14 @@ public class HttpParser {
 
 
     private static void parseRequestLine(String requestLines, HttpRequest httpRequest) {
-        int startIndex = requestLines.indexOf(' ');
-        int endIndex = requestLines.indexOf(' ', startIndex + 1);
-        String uri = requestLines.substring(startIndex + 1, endIndex); // адрес запроса
+
+        int methodEndIndex = requestLines.indexOf(' '); // Индекс конца метода запроса
+        String method = requestLines.substring(0, methodEndIndex); // Метод запроса
+        httpRequest.setMethod(HttpMethod.valueOf(method));
+
+        int uriStartIndex = methodEndIndex + 1;
+        int uriEndIndex = requestLines.indexOf(' ', uriStartIndex);
+        String uri = requestLines.substring(uriStartIndex, uriEndIndex); // адрес запроса
         httpRequest.setUri(URI.create(uri));
         if (uri.contains("?")) {
             String[] elements = uri.split("[?]");
@@ -40,7 +45,10 @@ public class HttpParser {
                 httpRequest.addRequestParameter(keyValue[0], keyValue[1]);
             }
         }
-        httpRequest.setMethod(HttpMethod.valueOf(requestLines.substring(0, startIndex)));
+
+        int protocolStartIndex = uriEndIndex + 1; // Индекс начала протокола и его версии
+        String protocolAndVersion = requestLines.substring(protocolStartIndex); // Протокол и его версия
+        httpRequest.setProtocolVersion(protocolAndVersion);
     }
 
 

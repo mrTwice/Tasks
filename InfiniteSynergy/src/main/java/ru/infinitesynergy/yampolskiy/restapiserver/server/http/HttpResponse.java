@@ -1,9 +1,36 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.http;
 
-public class HttpResponse extends Http {
-    private int statusCode;
+import java.util.Map;
 
-    public HttpResponse(int statusCode) {
-        this.statusCode = statusCode;
+public class HttpResponse extends Http {
+    private String protocolVersion;
+    private HttpStatus status;
+
+    public HttpStatus getStatus() {
+        return status;
     }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder responseBuilder = new StringBuilder();
+        responseBuilder.append(protocolVersion).append(" ").append(status.toString()).append("\r\n");
+        for (Map.Entry<String, String> entry : getHeaders().entrySet()) {
+            responseBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
+        }
+        responseBuilder.append("\r\n").append(getBody());
+        return responseBuilder.toString();
+    }
+
 }

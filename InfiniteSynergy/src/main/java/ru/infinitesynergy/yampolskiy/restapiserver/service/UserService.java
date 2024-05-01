@@ -12,12 +12,12 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User createNewUser(String username, String password) {
-        User existUser = userRepository.getUserByUsername(username);
+    public User createNewUser(User user) {
+        User existUser = userRepository.getUserByUsername(user.getLogin());
         if(existUser != null){
             throw new UserAlreadyExistException("Пользователь с таким именем существует");
         }
-        User newUser = userRepository.createUser(User.createUser(username, password));
+        User newUser = userRepository.createUser(user);
         return newUser;
     }
 

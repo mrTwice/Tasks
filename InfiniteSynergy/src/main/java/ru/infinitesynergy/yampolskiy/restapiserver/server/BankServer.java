@@ -9,12 +9,9 @@ import java.net.Socket;
 
 public class BankServer {
     private static final int PORT = 8080;
-    private final UserService userService;
-    private final BankAccountService bankAccountService;
+    private Dispatcher dispatcher;
 
-    public BankServer(UserService userService, BankAccountService bankAccountService) {
-        this.userService = userService;
-        this.bankAccountService = bankAccountService;
+    public BankServer() {
     }
 
     public void start() {
@@ -24,7 +21,7 @@ public class BankServer {
                 try(Socket clientSocket = serverSocket.accept()) {
                     System.out.println("Client connected: " + clientSocket.getInetAddress());
                     // Обработка запроса в новом потоке
-                    new Thread(new ClientHandler(clientSocket, userService, bankAccountService)).start();
+                    new Thread(new ClientHandler(clientSocket, dispatcher)).start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

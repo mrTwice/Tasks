@@ -11,7 +11,7 @@ public class UserRepository {
     public User createUser(User user) {
         try (Connection connection = dataBaseManager.getConnection()){
             PreparedStatement statement = connection.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, user.getUsername());
+            statement.setString(1, user.getLogin());
             statement.setString(2, user.getPassword());
             statement.executeUpdate();
             ResultSet generatedKeys = statement.getGeneratedKeys();
@@ -43,7 +43,7 @@ public class UserRepository {
     public void updateUser(User user) {
         try (Connection connection = dataBaseManager.getConnection()){
             PreparedStatement statement = connection.prepareStatement("UPDATE users SET username = ?, password = ? WHERE id = ?");
-            statement.setString(1, user.getUsername());
+            statement.setString(1, user.getLogin());
             statement.setString(2, user.getPassword());
             statement.setLong(3, user.getId());
             statement.executeUpdate();
