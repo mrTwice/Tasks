@@ -9,7 +9,9 @@ public class HttpParser {
 
 
     public static HttpRequest parseRawHttp(String rawHttp) {
+        System.out.println("*********** RAWREQUEST ************");
         System.out.println(rawHttp);
+        System.out.println("*********** RAWREQUEST ************");
         HttpRequest httpRequest = new HttpRequest();
         String requestLine = getRequestLine(rawHttp);
         parseRequestLine(requestLine, httpRequest);

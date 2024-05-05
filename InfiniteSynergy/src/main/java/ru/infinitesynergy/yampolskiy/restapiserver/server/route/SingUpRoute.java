@@ -27,11 +27,13 @@ public class SingUpRoute implements Route {
         if (!httpRequest.getMethod().equals(HttpMethod.POST)) {
             throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
         }
+        System.out.println("*********** HTTPREQUEST after PARSING ************");
         System.out.println("Метод: " + httpRequest.getMethod().toString());
         System.out.println("Путь: " + httpRequest.getUri().toString());
         System.out.println("Протокол: " + httpRequest.getProtocolVersion());
         System.out.println("Заголовки: " + httpRequest.getHeaders());
         System.out.println("Тело: " + httpRequest.getBody());
+        System.out.println("*********** HTTPREQUEST after PARSING ************");
 
         String stringUserDTO = httpRequest.getBody();
         System.out.println("UserDTO: " + stringUserDTO);
@@ -47,6 +49,11 @@ public class SingUpRoute implements Route {
         headers.put("Connection", "close");
         httpResponse.setHeaders(headers);
         httpResponse.setBody("");
+
+
+        System.out.println("*********** HTTPRESPONSE ************");
+        System.out.println(httpResponse);
+        System.out.println("*********** HTTPRESPONSE ************");
         return httpResponse;
     }
 

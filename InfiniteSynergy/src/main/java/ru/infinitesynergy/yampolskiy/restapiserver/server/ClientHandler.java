@@ -38,7 +38,9 @@ public class ClientHandler extends Thread {
             String rawRequest;
             while ((rawRequest = in.readLine()) != null) {
                 stringBuffer.append(rawRequest).append("\r\n");
+
             }
+
             if(stringBuffer.isEmpty()) {
                 throw new RequestIsNullException("Пустой запрос на входе");
             }
