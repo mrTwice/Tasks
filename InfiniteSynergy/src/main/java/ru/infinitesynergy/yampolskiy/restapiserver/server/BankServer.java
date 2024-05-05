@@ -16,7 +16,7 @@ public class BankServer {
             while (true) {
                 Socket socket = server.accept();
                 System.out.printf("Адрес клиента: %s\n Порт клиента: %s\n ",socket.getInetAddress(), socket.getPort());
-                ClientHandler handler = new ClientHandler(socket, dispatcher);
+                ClientHandler handler = new ClientHandler(handlers,socket, dispatcher);
                 handlers.add(handler);
             }
         } catch (IOException e) {
