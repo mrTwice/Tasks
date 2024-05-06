@@ -13,15 +13,15 @@ import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpParser
 public class ClientHandler extends Thread {
     private LinkedList<ClientHandler> handlers;
     private Socket clientSocket;
-    private Dispatcher dispatcher;
+    private RequestController requestController;
     private BufferedReader in; // поток чтения из сокета
     private PrintWriter out; // поток записи в сокет
 
 
-    public ClientHandler(LinkedList<ClientHandler> handlers,Socket clientSocket, Dispatcher dispatcher) throws IOException {
+    public ClientHandler(LinkedList<ClientHandler> handlers,Socket clientSocket, RequestController requestController) throws IOException {
         this.handlers = handlers;
         this.clientSocket = clientSocket;
-        this.dispatcher = dispatcher;
+        this.requestController = requestController;
         in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         out = new PrintWriter(clientSocket.getOutputStream());
         start();
@@ -38,14 +38,13 @@ public class ClientHandler extends Thread {
             String rawRequest;
             while ((rawRequest = in.readLine()) != null) {
                 stringBuffer.append(rawRequest).append("\r\n");
-
             }
 
             if(stringBuffer.isEmpty()) {
                 throw new RequestIsNullException("Пустой запрос на входе");
             }
             HttpRequest httpRequest = parseRawHttp(stringBuffer.toString());
-            HttpResponse httpResponse = dispatcher.createHttpResponse(httpRequest);
+            HttpResponse httpResponse = requestController.createHttpResponse(httpRequest);
             out.write(httpResponse.toString());
             out.flush();
 

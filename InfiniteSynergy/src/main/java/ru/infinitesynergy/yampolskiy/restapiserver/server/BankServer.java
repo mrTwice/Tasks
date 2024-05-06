@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class BankServer {
     private static final int PORT = 8080;
     private static final LinkedList<ClientHandler> handlers = new LinkedList<>();
-    private static final Dispatcher dispatcher = new Dispatcher();
+    private static final RequestController requestController = new RequestController();
 
     public static void main(String[] args) {
         try (ServerSocket server = new ServerSocket(PORT)) {
@@ -16,7 +16,7 @@ public class BankServer {
             while (true) {
                 Socket socket = server.accept();
                 System.out.printf("Адрес клиента: %s\n Порт клиента: %s\n ",socket.getInetAddress(), socket.getPort());
-                ClientHandler handler = new ClientHandler(handlers,socket, dispatcher);
+                ClientHandler handler = new ClientHandler(handlers,socket, requestController);
                 handlers.add(handler);
             }
         } catch (IOException e) {

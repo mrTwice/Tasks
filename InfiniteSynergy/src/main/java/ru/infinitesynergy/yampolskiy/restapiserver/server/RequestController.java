@@ -16,12 +16,12 @@ import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Dispatcher {
+public class RequestController {
     private UserService userService;
     private BankAccountService bankAccountService;
     private final Map<String, Route> routes;
 
-    public Dispatcher() {
+    public RequestController() {
         this.userService = new UserService(new UserRepository());
         this.bankAccountService = new BankAccountService(new BankAccountRepository());
         this.routes = new HashMap<>();
