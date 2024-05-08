@@ -3,11 +3,12 @@ package ru.infinitesynergy.yampolskiy.restapiserver.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class BankServer {
     private static final int PORT = 8080;
-    private static final LinkedList<ClientHandler> handlers = new LinkedList<>();
+    private static final List<Handler> handlers = new CopyOnWriteArrayList<>();
     private static final RequestController requestController = new RequestController();
 
     public static void main(String[] args) {
@@ -16,7 +17,7 @@ public class BankServer {
             while (true) {
                 Socket socket = server.accept();
                 System.out.printf("Адрес клиента: %s\n Порт клиента: %s\n ",socket.getInetAddress(), socket.getPort());
-                ClientHandler handler = new ClientHandler(handlers,socket, requestController);
+                Handler handler = new ClientHandlerMain(handlers,socket, requestController);
                 handlers.add(handler);
             }
         } catch (IOException e) {

@@ -10,41 +10,44 @@ import java.util.List;
 
 import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpParser.parseRawHttp;
 
-public class ClientHandler extends Thread {
-    private List<ClientHandler> handlers;
+public class ClientHandlerMain extends Thread implements Handler{
+    private List<Handler> handlers;
     private Socket clientSocket;
     private RequestController requestController;
 
 
-    public ClientHandler(List<ClientHandler> handlers, Socket clientSocket, RequestController requestController) throws IOException {
+    public ClientHandlerMain(List<Handler> handlers, Socket clientSocket, RequestController requestController) throws IOException {
         this.handlers = handlers;
         this.clientSocket = clientSocket;
         this.requestController = requestController;
-
         start();
     }
 
     public void removeHandler() {
-        handlers.remove(this);
+        handlers.remove(this);;
     }
 
     @Override
     public void run() {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-             PrintWriter out = new PrintWriter(clientSocket.getOutputStream())) {
+        try (InputStream inputStream = clientSocket.getInputStream();
+             OutputStream outputStream = clientSocket.getOutputStream();
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+             PrintWriter out = new PrintWriter(outputStream, true)
+        ) {
 
-            StringBuilder stringBuffer = new StringBuilder();
-            String rawRequest;
-            while ((rawRequest = in.readLine()) != null) {
-                stringBuffer.append(rawRequest).append("\r\n");
-                //TODO: решить проблему с зависанием на последнем символе
+            StringBuilder requestBuilder = new StringBuilder();
+            char[] buffer = new char[8192];
+            int bytesRead;
+            while ((bytesRead = reader.read(buffer)) != -1) {
+                requestBuilder.append(buffer, 0, bytesRead);
+                if (bytesRead < buffer.length) {
+                    break;
+                }
             }
-
-            if (stringBuffer.isEmpty()) {
+            if(requestBuilder.isEmpty()) {
                 throw new RequestIsNullException("Пустой запрос на входе");
             }
-
-            HttpRequest httpRequest = parseRawHttp(stringBuffer.toString());
+            HttpRequest httpRequest = parseRawHttp(requestBuilder.toString());
             HttpResponse httpResponse = requestController.createHttpResponse(httpRequest);
             out.write(httpResponse.toString());
             out.flush();
