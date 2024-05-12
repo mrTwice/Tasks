@@ -82,5 +82,23 @@ public class BankAccountRepository {
         return bankAccountIds;
     }
 
+    public List<BankAccount> getBankAccountsByUserId(Long userId) {
+        List<BankAccount> bankAccounts = new ArrayList<>();
+        try (Connection connection = dataBaseManager.getConnection()){
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM bank_accounts WHERE user_id = ?");
+            statement.setLong(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                BankAccount bankAccount = BankAccount.createBankAccount(resultSet.getLong("user_id"));
+                bankAccount.setId(resultSet.getLong("id"));
+                bankAccount.setAccountNumber(resultSet.getString("account_number"));
+                bankAccount.setAmount(resultSet.getDouble("amount"));
+                bankAccounts.add(bankAccount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return bankAccounts;
 
+    }
 }

@@ -52,6 +52,9 @@ public class BankAccount {
     }
 
     public void setAmount(double amount) {
+        if(amount < 0) {
+            throw new RuntimeException("Недостаточно средств!");
+        }
         this.amount = amount;
     }
 

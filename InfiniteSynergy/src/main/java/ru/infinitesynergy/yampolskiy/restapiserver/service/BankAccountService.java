@@ -3,6 +3,7 @@ package ru.infinitesynergy.yampolskiy.restapiserver.service;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.BankAccount;
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.BankAccountRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BankAccountService {
@@ -17,8 +18,8 @@ public class BankAccountService {
         return newBankAccount;
     }
 
-    public BankAccount getBankAccountByUserId(Long userId) {
-        return bankAccountRepository.readBankAccount(userId);
+    public BankAccount getBankAccountById(Long id) {
+        return bankAccountRepository.readBankAccount(id);
     }
 
     public void updateBankAccount(BankAccount bankAccount) {
@@ -29,7 +30,7 @@ public class BankAccountService {
         bankAccountRepository.deleteBankAccount(id);
     }
 
-    public List<Long> getUserBankAccounts(Long userId) {
-        return bankAccountRepository.getBankAccountIdsByUserId(userId);
+    public List<BankAccount> getUsersBankAccounts(Long userId) {
+        return bankAccountRepository.getBankAccountsByUserId(userId);
     }
 }

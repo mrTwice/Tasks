@@ -55,31 +55,29 @@ public class HttpParser {
     }
 
 
-    private static Map<String, String> getHeaders(String rawHttp) {
-        Map<String, String> headers = new HashMap<>();
+    private static HttpHeaders getHeaders(String rawHttp) {
+        HttpHeaders headers = new HttpHeaders();
 
         // Разделение запроса на строки
         String[] requestLines = rawHttp.split("\r\n");
 
-        // Находим индекс первой пустой строки
-        int emptyLineIndex = -1;
-        for (int i = 0; i < requestLines.length; i++) {
-            if (requestLines[i].isEmpty()) {
-                emptyLineIndex = i;
+        // Парсим первую строку запроса
+        boolean isFirstLine = true;
+        String firstLine = "";
+        for (String line : requestLines) {
+            if (isFirstLine) {
+                isFirstLine = false;
+                firstLine = line;
+                continue;
+            } else if (line.isEmpty()) {
+                // Если строка пустая, это конец заголовков
                 break;
             }
-        }
 
-        // Если нет пустой строки, заголовков нет
-        if (emptyLineIndex == -1) {
-            return headers;
-        }
-
-        // Парсим заголовки
-        for (int i = 1; i < emptyLineIndex; i++) {
-            String[] headerParts = requestLines[i].split(": ", 2);
+            // Если нет пустой строки, все строки после первой - это заголовки
+            String[] headerParts = line.split(": ", 2);
             if (headerParts.length == 2) {
-                headers.put(headerParts[0], headerParts[1]);
+                headers.addHeader(headerParts[0], headerParts[1]);
             }
         }
 

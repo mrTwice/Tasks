@@ -6,10 +6,7 @@ import ru.infinitesynergy.yampolskiy.restapiserver.repository.BankAccountReposit
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.UserRepository;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpRequest;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse;
-import ru.infinitesynergy.yampolskiy.restapiserver.server.route.MoneyRoute;
-import ru.infinitesynergy.yampolskiy.restapiserver.server.route.Route;
-import ru.infinitesynergy.yampolskiy.restapiserver.server.route.SingInRoute;
-import ru.infinitesynergy.yampolskiy.restapiserver.server.route.SingUpRoute;
+import ru.infinitesynergy.yampolskiy.restapiserver.server.route.*;
 import ru.infinitesynergy.yampolskiy.restapiserver.service.BankAccountService;
 import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
 
@@ -26,8 +23,9 @@ public class RequestController {
         this.bankAccountService = new BankAccountService(new BankAccountRepository());
         this.routes = new HashMap<>();
         routes.put("/signup", new SingUpRoute(userService));
-        routes.put("/signin", new SingInRoute());
-        routes.put("/money", new MoneyRoute());
+        routes.put("/signin", new SingInRoute(userService));
+        routes.put("/create/bankaccount", new CreateBankAccount(userService, bankAccountService));
+        routes.put("/money", new MoneyRoute(userService, bankAccountService));
     }
 
 

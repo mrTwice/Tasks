@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.PasswordIsNullException;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.UserNameIsNullException;
 
-import java.util.ArrayList;
+
 import java.util.List;
 
 @JsonSerialize
@@ -14,7 +14,7 @@ public class User {
     private Long id;
     private String login;
     private String password;
-    private List<Long> bankAccountList = new ArrayList<>();
+    private List<BankAccount> bankAccountsList;
 
     public User(){
 
@@ -50,8 +50,8 @@ public class User {
         return password;
     }
 
-    public List<Long> getBankAccountList() {
-        return bankAccountList;
+    public List<BankAccount> getBankAccountList() {
+        return bankAccountsList;
     }
 
     public void setId(Long id) {
@@ -66,7 +66,7 @@ public class User {
         this.password = password;
     }
 
-    public void addBankAccount(Long bankAccount) {
-        this.bankAccountList.add(bankAccount);
+    public void addBankAccounts(List<BankAccount> bankAccounts) {
+        this.bankAccountsList = bankAccounts;
     }
 }

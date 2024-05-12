@@ -26,7 +26,7 @@ public class HttpResponse extends Http {
     public String toString() {
         StringBuilder responseBuilder = new StringBuilder();
         responseBuilder.append(protocolVersion).append(" ").append(status.toString()).append("\r\n");
-        for (Map.Entry<String, String> entry : getHeaders().entrySet()) {
+        for (Map.Entry<String, String> entry : getHeaders().getAllHeaders().entrySet()) {
             responseBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\r\n");
         }
         responseBuilder.append("\r\n").append(getBody());
