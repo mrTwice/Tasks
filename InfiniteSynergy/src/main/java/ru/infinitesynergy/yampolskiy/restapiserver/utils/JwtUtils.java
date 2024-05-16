@@ -1,4 +1,4 @@
-package ru.infinitesynergy.yampolskiy.restapiserver.jwt;
+package ru.infinitesynergy.yampolskiy.restapiserver.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;

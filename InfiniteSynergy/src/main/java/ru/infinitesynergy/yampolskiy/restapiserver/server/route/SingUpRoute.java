@@ -1,20 +1,22 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ru.infinitesynergy.yampolskiy.restapiserver.entities.Error;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
+import ru.infinitesynergy.yampolskiy.restapiserver.utils.ObjectMapperSingleton;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.*;
 import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse.getErrorResponse;
+
+
 public class SingUpRoute implements Route {
-    private UserService userService;
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final UserService userService;
 
     public SingUpRoute(UserService userService) {
         this.userService = userService;
@@ -23,7 +25,8 @@ public class SingUpRoute implements Route {
     @Override
     public HttpResponse execute(HttpRequest httpRequest) throws JsonProcessingException {
         if (!httpRequest.getMethod().equals(HttpMethod.POST)) {
-            throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
+            String message = "Некорректный метод запроса: " + httpRequest.getMethod();
+            return getErrorResponse(httpRequest, HttpStatus.METHOD_NOT_ALLOWED, message);
         }
         System.out.println("*********** HTTPREQUEST after PARSING ************");
         System.out.println("Метод: " + httpRequest.getMethod().toString());
@@ -34,20 +37,18 @@ public class SingUpRoute implements Route {
         System.out.println("*********** HTTPREQUEST after PARSING ************");
 
         String stringUserDTO = httpRequest.getBody();
-        userService.createNewUser(objectMapper.readValue(stringUserDTO, User.class));
-        HttpResponse httpResponse = new HttpResponse();
-        httpResponse.setProtocolVersion(httpRequest.getProtocolVersion());
-        httpResponse.setStatus(HttpStatus.CREATED);
-        HttpHeaders headers = new HttpHeaders();
-        headers.addHeader(HttpHeader.DATE.getHeaderName(), ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.RFC_1123_DATE_TIME));
-        headers.addHeader(HttpHeader.SERVER.getHeaderName(), "BankServer/0.1");
-        headers.addHeader(HttpHeader.LOCATION.getHeaderName(), "https://localhost:8080/signin");
-        headers.addHeader(HttpHeader.CONTENT_TYPE.getHeaderName(), "application/octet-stream");
-        headers.addHeader(HttpHeader.CONTENT_LENGTH.getHeaderName(), "0");
-        headers.addHeader(HttpHeader.CONNECTION.getHeaderName(), "close");
-        httpResponse.setHeaders(headers);
-        httpResponse.setBody("");
+        userService.createNewUser(ObjectMapperSingleton.getInstance().readValue(stringUserDTO, User.class));
 
+        HttpResponse httpResponse = new HttpResponse.Builder()
+                .setProtocolVersion(httpRequest.getProtocolVersion())
+                .setStatus(HttpStatus.CREATED)
+                .addHeader(HttpHeader.DATE, ZonedDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.RFC_1123_DATE_TIME))
+                .addHeader(HttpHeader.SERVER, "BankServer/0.1")
+                .addHeader(HttpHeader.LOCATION, "https://localhost:8080/signin")
+                .addHeader(HttpHeader.CONTENT_TYPE, "application/octet-stream")
+                .addHeader(HttpHeader.CONNECTION, "close")
+                .setBody("")
+                .build();
 
         System.out.println("*********** HTTPRESPONSE ************");
         System.out.println(httpResponse);

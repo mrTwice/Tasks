@@ -1,17 +1,20 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidPathLocationException;
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.BankAccountRepository;
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.UserRepository;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpRequest;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse;
+import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpStatus;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.route.*;
 import ru.infinitesynergy.yampolskiy.restapiserver.service.BankAccountService;
 import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse.getErrorResponse;
+
 
 public class RequestController {
     private UserService userService;
@@ -31,9 +34,11 @@ public class RequestController {
 
     public HttpResponse createHttpResponse(HttpRequest httpRequest) throws JsonProcessingException {
         if(!routes.containsKey(httpRequest.getUri().toString())){
-            System.out.println(httpRequest.getUri().toString());
-            throw new NotValidPathLocationException("Запрашиваемый путь " + httpRequest.getUri().toString() + " не существует.");
+            String message = "Запрашиваемый путь " + httpRequest.getUri().toString() + " не существует.";
+            return getErrorResponse(httpRequest, HttpStatus.NOT_FOUND, message);
         }
         return routes.get(httpRequest.getUri().toString()).execute(httpRequest);
     }
+
+
 }

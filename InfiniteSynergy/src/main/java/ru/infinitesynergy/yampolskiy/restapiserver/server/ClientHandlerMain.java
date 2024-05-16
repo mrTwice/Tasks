@@ -11,9 +11,9 @@ import java.util.List;
 import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpParser.parseRawHttp;
 
 public class ClientHandlerMain extends Thread implements Handler{
-    private List<Handler> handlers;
-    private Socket clientSocket;
-    private RequestController requestController;
+    private final List<Handler> handlers;
+    private final Socket clientSocket;
+    private final RequestController requestController;
 
 
     public ClientHandlerMain(List<Handler> handlers, Socket clientSocket, RequestController requestController) throws IOException {

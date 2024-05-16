@@ -1,4 +1,4 @@
-package ru.infinitesynergy.yampolskiy.restapiserver.jwt;
+package ru.infinitesynergy.yampolskiy.restapiserver.server.http;
 
 public class BearerAuthentication {
     private String jwtToken;

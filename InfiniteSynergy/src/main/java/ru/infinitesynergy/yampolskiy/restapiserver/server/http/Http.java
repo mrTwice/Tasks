@@ -1,16 +1,11 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.http;
 
-import java.util.HashMap;
-import java.util.Map;
 
-
-public class Http {
-    private HttpHeaders headers;
-    private String body;
+public abstract class Http {
+    protected HttpHeaders headers;
+    protected String body;
 
     public Http() {
-        this.headers = new HttpHeaders();
-        this.body = "";
     }
 
     public HttpHeaders getHeaders() {
