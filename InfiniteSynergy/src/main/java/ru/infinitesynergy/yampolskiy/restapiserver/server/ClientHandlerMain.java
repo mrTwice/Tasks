@@ -53,7 +53,7 @@ public class ClientHandlerMain extends Thread implements Handler{
             out.flush();
 
         } catch (Exception e) {
-            System.out.printf("\u001B[31mОшибка в потоке: %s.\nСообщение: %s\n\u001B[0m",Thread.currentThread().getName(), e.getMessage());
+            System.err.printf("Ошибка в потоке: %s.\nСообщение: %s\n",Thread.currentThread().getName(), e.getMessage());
             removeHandler();
             this.interrupt();
         } finally {

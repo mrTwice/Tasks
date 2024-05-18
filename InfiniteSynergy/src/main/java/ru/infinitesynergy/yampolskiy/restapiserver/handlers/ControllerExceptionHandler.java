@@ -1,8 +1,8 @@
-package ru.infinitesynergy.yampolskiy.restapiserver.exceptions.handlers;
+package ru.infinitesynergy.yampolskiy.restapiserver.handlers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.Error;
-import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.*;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidPathLocationException;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpHeader;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpRequest;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse;
@@ -15,10 +15,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class RouteExceptionHandler implements InvocationHandler {
+public class ControllerExceptionHandler implements InvocationHandler {
     private final Object target;
 
-    public RouteExceptionHandler(Object target) {
+    public ControllerExceptionHandler(Object target) {
         this.target = target;
     }
 
@@ -29,18 +29,8 @@ public class RouteExceptionHandler implements InvocationHandler {
         } catch (Exception e) {
             Throwable cause = e.getCause();
             return switch (cause) {
-                case IllegalArgumentException illegalArgumentException ->
-                        handleThrowable(illegalArgumentException, (HttpRequest) args[0], HttpStatus.UNAUTHORIZED);
-                case TokenIsNotValidException tokenIsNotValidException ->
-                        handleThrowable(tokenIsNotValidException, (HttpRequest) args[0], HttpStatus.UNAUTHORIZED);
                 case NotValidPathLocationException notValidPathLocationException ->
                         handleThrowable(notValidPathLocationException, (HttpRequest) args[0], HttpStatus.NOT_FOUND);
-                case NotValidMethodException notValidMethodException ->
-                        handleThrowable(notValidMethodException, (HttpRequest) args[0], HttpStatus.METHOD_NOT_ALLOWED);
-                case UserNotFoundException userNotFoundException ->
-                        handleThrowable(userNotFoundException, (HttpRequest) args[0], HttpStatus.UNAUTHORIZED);
-                case UserAlreadyExistException userAlreadyExistException ->
-                        handleThrowable(userAlreadyExistException, (HttpRequest) args[0], HttpStatus.CONFLICT);
                 case null, default -> {
                     assert cause != null;
                     yield handleGeneralException(cause, (HttpRequest) args[0]);

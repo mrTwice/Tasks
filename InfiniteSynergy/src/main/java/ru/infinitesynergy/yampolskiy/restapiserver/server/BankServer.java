@@ -1,6 +1,6 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server;
 
-import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.handlers.ControllerExceptionHandler;
+import ru.infinitesynergy.yampolskiy.restapiserver.handlers.ControllerExceptionHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;

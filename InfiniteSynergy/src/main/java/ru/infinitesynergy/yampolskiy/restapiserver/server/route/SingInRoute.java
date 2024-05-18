@@ -1,6 +1,5 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.UserNotFoundException;

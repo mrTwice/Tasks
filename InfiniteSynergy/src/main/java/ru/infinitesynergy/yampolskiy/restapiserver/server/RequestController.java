@@ -1,7 +1,8 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server;
 
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidPathLocationException;
-import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.handlers.RouteExceptionHandler;
+import ru.infinitesynergy.yampolskiy.restapiserver.handlers.RouteExceptionHandler;
+import ru.infinitesynergy.yampolskiy.restapiserver.handlers.RouteLoggingHandler;
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.BankAccountRepository;
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.UserRepository;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpRequest;
@@ -38,12 +39,16 @@ public class RequestController implements Controller {
     }
 
     private Route createRouteProxy(Route route) {
-        return (Route) Proxy.newProxyInstance(
+        Route exceptionHandlingProxy = (Route) Proxy.newProxyInstance(
                 Route.class.getClassLoader(),
                 new Class<?>[]{Route.class},
                 new RouteExceptionHandler(route)
         );
+
+        return (Route) Proxy.newProxyInstance(
+                Route.class.getClassLoader(),
+                new Class<?>[]{Route.class},
+                new RouteLoggingHandler(exceptionHandlingProxy)
+        );
     }
-
-
 }
