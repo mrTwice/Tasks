@@ -10,10 +10,14 @@ public class Error {
     private int statusCode;
     private String details;
 
-    public Error(String error, int statusCode, String details) {
+    private Error(String error, int statusCode, String details) {
         this.error = error;
         this.statusCode = statusCode;
         this.details = details;
+    }
+
+    public static Error createError(String error, int statusCode, String details) {
+        return new Error(error, statusCode, details);
     }
 
     public String getError() {

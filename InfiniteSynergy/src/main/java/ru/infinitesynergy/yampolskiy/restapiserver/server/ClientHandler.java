@@ -16,7 +16,7 @@ public class ClientHandler extends Thread {
     private RequestController requestController;
 
 
-    public ClientHandler(List<ClientHandler> handlers, Socket clientSocket, RequestController requestController) throws IOException {
+    public ClientHandler(List<ClientHandler> handlers, Socket clientSocket, RequestController requestController) {
         this.handlers = handlers;
         this.clientSocket = clientSocket;
         this.requestController = requestController;
@@ -49,9 +49,11 @@ public class ClientHandler extends Thread {
             out.write(httpResponse.toString());
             out.flush();
 
-        } catch (RequestIsNullException | IOException e) {
+        } catch (RequestIsNullException e) {
             removeHandler();
             this.interrupt();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         } finally {
             try {
                 if (clientSocket != null) {

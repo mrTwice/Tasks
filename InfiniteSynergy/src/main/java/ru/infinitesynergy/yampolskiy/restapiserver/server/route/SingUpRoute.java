@@ -1,7 +1,6 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import ru.infinitesynergy.yampolskiy.restapiserver.entities.Error;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.ObjectMapperSingleton;
@@ -12,8 +11,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse.getErrorResponse;
-
 
 public class SingUpRoute implements Route {
     private final UserService userService;
@@ -23,10 +20,9 @@ public class SingUpRoute implements Route {
     }
 
     @Override
-    public HttpResponse execute(HttpRequest httpRequest) throws JsonProcessingException {
+    public HttpResponse execute(HttpRequest httpRequest) throws Exception {
         if (!httpRequest.getMethod().equals(HttpMethod.POST)) {
-            String message = "Некорректный метод запроса: " + httpRequest.getMethod();
-            return getErrorResponse(httpRequest, HttpStatus.METHOD_NOT_ALLOWED, message);
+            throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
         }
         System.out.println("*********** HTTPREQUEST after PARSING ************");
         System.out.println("Метод: " + httpRequest.getMethod().toString());

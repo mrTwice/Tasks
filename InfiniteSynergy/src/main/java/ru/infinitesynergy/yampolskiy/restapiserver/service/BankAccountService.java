@@ -2,8 +2,6 @@ package ru.infinitesynergy.yampolskiy.restapiserver.service;
 
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.BankAccount;
 import ru.infinitesynergy.yampolskiy.restapiserver.repository.BankAccountRepository;
-
-import java.util.ArrayList;
 import java.util.List;
 
 public class BankAccountService {

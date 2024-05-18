@@ -2,9 +2,11 @@ package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.BankAccount;
-import ru.infinitesynergy.yampolskiy.restapiserver.entities.Error;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.TransferMoneyDTO;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.BankAccountNotFoundException;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotFundsEnoughInAccountException;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.TokenIsNotValidException;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.JwtUtils;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.ObjectMapperSingleton;
@@ -16,8 +18,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse.getErrorResponse;
-
 public class MoneyRoute implements Route {
     private final UserService userService;
     private final BankAccountService bankAccountService;
@@ -28,20 +28,14 @@ public class MoneyRoute implements Route {
     }
 
     @Override
-    public HttpResponse execute(HttpRequest httpRequest) throws JsonProcessingException {
-        try {
+    public HttpResponse execute(HttpRequest httpRequest) throws Exception {
             if (httpRequest.getMethod().equals(HttpMethod.GET)) {
                 return handleGetRequest(httpRequest);
             } else if (httpRequest.getMethod().equals(HttpMethod.POST)) {
                 return handlePostRequest(httpRequest);
             } else {
-                return getErrorResponse(httpRequest, HttpStatus.METHOD_NOT_ALLOWED, "Некорректный метод запроса: " + httpRequest.getMethod());
+                throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
             }
-        } catch (IllegalArgumentException | TokenIsNotValidException e) {
-            return getErrorResponse(httpRequest, HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (Exception e) {
-            return getErrorResponse(httpRequest, HttpStatus.INTERNAL_SERVER_ERROR, "Внутренняя ошибка сервера");
-        }
     }
 
     private HttpResponse handlePostRequest(HttpRequest httpRequest) throws JsonProcessingException {
@@ -55,14 +49,12 @@ public class MoneyRoute implements Route {
         BankAccount from = sender.getBankAccountList().stream().filter(bankAccount -> bankAccount.getAmount() > amount).findFirst().orElse(null);
 
         if(from == null) {
-            String message = "Ни на одном счете нет достаточного количества средств для перевода";
-            return getErrorResponse(httpRequest, HttpStatus.FORBIDDEN, message);
+            throw new NotFundsEnoughInAccountException("Ни на одном счете нет достаточного количества средств для перевода");
         }
 
         BankAccount to = receiver.getBankAccountList().stream().findFirst().orElse(null);
         if(to == null) {
-            String message = "У получателя не открыт ни один счет";
-            return getErrorResponse(httpRequest, HttpStatus.NOT_FOUND, message);
+            throw new BankAccountNotFoundException("У получателя не открыт ни один счет");
         }
         //TODO: подумать над транзакциями
         from.setAmount(from.getAmount() - amount);

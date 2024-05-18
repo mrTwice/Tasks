@@ -2,8 +2,9 @@ package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.BankAccount;
-import ru.infinitesynergy.yampolskiy.restapiserver.entities.Error;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.TokenIsNotValidException;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.JwtUtils;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.ObjectMapperSingleton;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.*;
@@ -13,8 +14,6 @@ import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-
-import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse.getErrorResponse;
 
 public class CreateBankAccount implements Route{
 
@@ -26,24 +25,21 @@ public class CreateBankAccount implements Route{
         this.bankAccountService = bankAccountService;
     }
     @Override
-    public HttpResponse execute(HttpRequest httpRequest) throws JsonProcessingException {
+    public HttpResponse execute(HttpRequest httpRequest) throws Exception {
         if (!httpRequest.getMethod().equals(HttpMethod.GET)) {
-            String message = "Некорректный метод запроса: " + httpRequest.getMethod();
-            return getErrorResponse(httpRequest, HttpStatus.METHOD_NOT_ALLOWED, message);
+            throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
         }
 
         String authorizationHeaderValue = httpRequest.getHeaders().getHeader(HttpHeader.AUTHORIZATION.getHeaderName());
 
         if (authorizationHeaderValue == null || !authorizationHeaderValue.startsWith("Bearer ")) {
-            String message = "Отсутствует или неверный формат заголовка Authorization";
-            return getErrorResponse(httpRequest, HttpStatus.UNAUTHORIZED, message);
+            throw new TokenIsNotValidException("Отсутствует или неверный формат заголовка Authorization");
         }
 
         String jwtToken = authorizationHeaderValue.substring("Bearer ".length());
 
         if(!JwtUtils.isValidToken(jwtToken)){
-            String message = "Токен не валидный";
-            return getErrorResponse(httpRequest, HttpStatus.UNAUTHORIZED, message);
+            throw new TokenIsNotValidException("Токен не валидный");
         }
         String username = JwtUtils.extractUsername(jwtToken);
         User user = userService.getUserByUserName(username);

@@ -13,10 +13,10 @@ import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpParser
 public class ClientHandlerMain extends Thread implements Handler{
     private final List<Handler> handlers;
     private final Socket clientSocket;
-    private final RequestController requestController;
+    private final Controller requestController;
 
 
-    public ClientHandlerMain(List<Handler> handlers, Socket clientSocket, RequestController requestController) throws IOException {
+    public ClientHandlerMain(List<Handler> handlers, Socket clientSocket, Controller requestController) throws Exception {
         this.handlers = handlers;
         this.clientSocket = clientSocket;
         this.requestController = requestController;
@@ -52,7 +52,7 @@ public class ClientHandlerMain extends Thread implements Handler{
             out.write(httpResponse.toString());
             out.flush();
 
-        } catch (RequestIsNullException | IOException e) {
+        } catch (Exception e) {
             System.out.printf("\u001B[31mОшибка в потоке: %s.\nСообщение: %s\n\u001B[0m",Thread.currentThread().getName(), e.getMessage());
             removeHandler();
             this.interrupt();
@@ -66,4 +66,5 @@ public class ClientHandlerMain extends Thread implements Handler{
             }
         }
     }
+
 }

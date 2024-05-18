@@ -1,8 +1,8 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import ru.infinitesynergy.yampolskiy.restapiserver.entities.Error;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
+import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.UserNotFoundException;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.BearerAuthentication;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.JwtUtils;
@@ -13,8 +13,6 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse.getErrorResponse;
-
 
 public class SingInRoute implements Route{
     private final UserService userService;
@@ -24,10 +22,9 @@ public class SingInRoute implements Route{
     }
 
     @Override
-    public HttpResponse execute(HttpRequest httpRequest) throws JsonProcessingException {
-        if (!httpRequest.getMethod().equals(HttpMethod.GET)) {
-            String message = "Некорректный метод запроса: " + httpRequest.getMethod();
-            return getErrorResponse(httpRequest, HttpStatus.METHOD_NOT_ALLOWED, message);
+    public HttpResponse execute(HttpRequest httpRequest) throws Exception {
+        if (!httpRequest.getMethod().equals(HttpMethod.POST)) {
+            throw new NotValidMethodException("Некорректный метод запроса: " + httpRequest.getMethod());
         }
         String stringUserDTO = httpRequest.getBody();
         User user = ObjectMapperSingleton.getInstance().readValue(stringUserDTO, User.class);
