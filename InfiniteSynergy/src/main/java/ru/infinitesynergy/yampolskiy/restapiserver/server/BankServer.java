@@ -1,6 +1,10 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.infinitesynergy.yampolskiy.restapiserver.handlers.ControllerExceptionHandler;
+import ru.infinitesynergy.yampolskiy.restapiserver.handlers.RouteLoggingHandler;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
@@ -13,6 +17,7 @@ public class BankServer {
     private static final int PORT = 8080;
     private static final List<Handler> handlers = new CopyOnWriteArrayList<>();
     private static final Controller requestController = createControllerProxy(new RequestController());
+    private static final Logger logger = LogManager.getLogger(BankServer.class);
 
     public static void main(String[] args) {
         try (ServerSocket server = new ServerSocket(PORT)) {
@@ -23,10 +28,8 @@ public class BankServer {
                 Handler handler = new ClientHandler(handlers,socket, requestController);
                 handlers.add(handler);
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.throwing( Level.WARN,e);
         }
     }
 
