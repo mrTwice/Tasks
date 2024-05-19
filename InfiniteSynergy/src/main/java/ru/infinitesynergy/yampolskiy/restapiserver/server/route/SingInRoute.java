@@ -1,5 +1,7 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.UserNotFoundException;
@@ -14,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 
 
 public class SingInRoute implements Route{
+
+    private static final Logger logger = LogManager.getLogger(SingInRoute.class);
     private final UserService userService;
 
     public SingInRoute(UserService userService) {
@@ -33,6 +37,7 @@ public class SingInRoute implements Route{
         }
         String jwtToken = JwtUtils.createToken(user.getLogin());
         BearerAuthentication bearerAuth = new BearerAuthentication(jwtToken);
+        logger.info("Пользователь {} авторизовался", user.getLogin());
         return new HttpResponse.Builder()
                 .setProtocolVersion(httpRequest.getProtocolVersion())
                 .setStatus(HttpStatus.OK)

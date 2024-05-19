@@ -1,6 +1,7 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
 import ru.infinitesynergy.yampolskiy.restapiserver.utils.ObjectMapperSingleton;
@@ -13,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 
 public class SingUpRoute implements Route {
+    private static final Logger logger = LogManager.getLogger(SingUpRoute.class);
     private final UserService userService;
 
     public SingUpRoute(UserService userService) {
@@ -26,7 +28,7 @@ public class SingUpRoute implements Route {
         }
 
         String stringUserDTO = httpRequest.getBody();
-        userService.createNewUser(ObjectMapperSingleton.getInstance().readValue(stringUserDTO, User.class));
+        User newUser = userService.createNewUser(ObjectMapperSingleton.getInstance().readValue(stringUserDTO, User.class));
 
         HttpResponse httpResponse = new HttpResponse.Builder()
                 .setProtocolVersion(httpRequest.getProtocolVersion())
@@ -39,6 +41,7 @@ public class SingUpRoute implements Route {
                 .setBody("")
                 .build();
 
+        logger.info("Зарегистрирован пользователь: {}", newUser.getLogin());
         return httpResponse;
     }
 

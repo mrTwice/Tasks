@@ -1,6 +1,8 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.BankAccount;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.TransferMoneyDTO;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
@@ -17,8 +19,11 @@ import ru.infinitesynergy.yampolskiy.restapiserver.service.UserService;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class MoneyRoute implements Route {
+
+    private static final Logger logger = LogManager.getLogger(MoneyRoute.class);
     private final UserService userService;
     private final BankAccountService bankAccountService;
 
@@ -62,6 +67,9 @@ public class MoneyRoute implements Route {
         bankAccountService.updateBankAccount(from);
         bankAccountService.updateBankAccount(to);
 
+        logger.info("Пользователь {} перевел {} y.e. со счета № {} на счет № {} пользователя {}", sender.getLogin(),
+                amount, from.getAccountNumber(), to.getAccountNumber(), receiver.getLogin());
+
         String responseBody = ObjectMapperSingleton.getInstance().writeValueAsString(from);
         return buildResponse(httpRequest.getProtocolVersion(), HttpStatus.OK, responseBody);
     }
@@ -69,7 +77,14 @@ public class MoneyRoute implements Route {
     private HttpResponse handleGetRequest(HttpRequest httpRequest) throws JsonProcessingException {
         String username = getUsernameFromToken(httpRequest.getHeaders().getHeader(HttpHeader.AUTHORIZATION.getHeaderName()));
         User user = userService.getUserByUserName(username);
-        String responseBody = ObjectMapperSingleton.getInstance().writeValueAsString(bankAccountService.getUsersBankAccounts(user.getId()));
+
+        logger.info("Пользователь {} запросил баланс по счетам", user.getLogin());
+        List<BankAccount> bankAccountList = bankAccountService.getUsersBankAccounts(user.getId());
+        for(BankAccount bankAccount: bankAccountList){
+            logger.info("На счете № {} пользователя {} {} y.e.", bankAccount.getAccountNumber(), user.getLogin(), bankAccount.getAmount());
+        }
+
+        String responseBody = ObjectMapperSingleton.getInstance().writeValueAsString(bankAccountList);
         return buildResponse(httpRequest.getProtocolVersion(), HttpStatus.OK, responseBody);
     }
 

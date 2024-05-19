@@ -20,7 +20,7 @@ public class BankServer {
             while (true) {
                 Socket socket = server.accept();
                 System.out.printf("Адрес клиента: %s\n Порт клиента: %s\n ",socket.getInetAddress(), socket.getPort());
-                Handler handler = new ClientHandlerMain(handlers,socket, requestController);
+                Handler handler = new ClientHandler(handlers,socket, requestController);
                 handlers.add(handler);
             }
         } catch (IOException e) {

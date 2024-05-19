@@ -1,6 +1,7 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.server.route;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.BankAccount;
 import ru.infinitesynergy.yampolskiy.restapiserver.entities.User;
 import ru.infinitesynergy.yampolskiy.restapiserver.exceptions.NotValidMethodException;
@@ -17,6 +18,7 @@ import java.time.format.DateTimeFormatter;
 
 public class CreateBankAccount implements Route{
 
+    private static final Logger logger = LogManager.getLogger(CreateBankAccount.class);
     private final UserService userService;
     private final BankAccountService bankAccountService;
 
@@ -46,6 +48,7 @@ public class CreateBankAccount implements Route{
         BankAccount bankAccount = bankAccountService.createNewBankAccount(user.getId());
         String responseBody = ObjectMapperSingleton.getInstance().writeValueAsString(bankAccount);
 
+        logger.info("Пользователем {} открыт счет № {} ", user.getLogin(), bankAccount.getAccountNumber());
         return new HttpResponse.Builder()
                 .setProtocolVersion(httpRequest.getProtocolVersion())
                 .setStatus(HttpStatus.CREATED)

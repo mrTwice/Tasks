@@ -1,5 +1,7 @@
 package ru.infinitesynergy.yampolskiy.restapiserver.handlers;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpRequest;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.http.HttpResponse;
 import ru.infinitesynergy.yampolskiy.restapiserver.server.route.Route;
@@ -10,6 +12,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class RouteLoggingHandler implements InvocationHandler {
+    private static final Logger logger = LogManager.getLogger(RouteLoggingHandler.class);
     private final Route target;
 
     public RouteLoggingHandler(Route target) {
@@ -37,7 +40,8 @@ public class RouteLoggingHandler implements InvocationHandler {
         if (request.getBody() != null && !request.getBody().isEmpty()) {
             logMessage.append(" with body: ").append(request.getBody());
         }
-        System.out.println(logMessage.toString());
+        System.out.println(logMessage);
+        logger.info(logMessage.toString());
     }
 
     private void logResponse(HttpResponse response) {
@@ -48,6 +52,7 @@ public class RouteLoggingHandler implements InvocationHandler {
             logMessage.append(" with body: ").append(response.getBody());
         }
         System.out.println(logMessage.toString());
+        logger.info(logMessage.toString());
     }
 }
 
